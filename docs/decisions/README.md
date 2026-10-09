@@ -30,7 +30,7 @@ means writing a new record.
 | [0007](0007-ooga-booga-license.md) | Adopt The Ooga Booga License | accepted |
 | [0008](0008-move-to-oogaboogax.md) | The repository lives at OogaBoogaX/lightningfoundry | accepted |
 | [0009](0009-rebalancing-in-lightning-jet.md) | Circular rebalancing lives in Lightning Jet, under Policy when managed | superseded by 0011 |
-| [0010](0010-adopt-or-install.md) | Foundry adopts compatible nodes as well as installing its own | proposed |
+| [0010](0010-adopt-or-install.md) | Foundry adopts compatible nodes as well as installing its own | accepted |
 | [0011](0011-jet-optimizes-foundry-operates.md) | Lightning Jet optimizes the node; Foundry operates it | accepted |
 
 ## Waiting for a record
