@@ -59,7 +59,10 @@ project requires AI assistance rather than merely permitting it. See
 
 Some areas get a second pair of eyes regardless of size:
 
-- **Security policy, limits and permissions** — anything constraining what Foundry may do
+- **Security policy, limits and permissions** — anything constraining what Foundry or a module
+  may do
+- **The module interface** — what a module such as Lightning Jet asks for, and how Policy
+  checks it
 - **Dependencies** — every addition needs a written justification, a pinned version and a hash
 - **Wallet, macaroon or key handling**
 - **Economic execution** — anything that moves money, with or without a human approving it

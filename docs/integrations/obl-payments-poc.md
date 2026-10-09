@@ -18,8 +18,8 @@ who runs it, and they are OBL's to publish.
 | Build the cave on simulated events | the schema and examples now; the simulator's seeded, repeatable scenarios later | now, then M1 |
 | Show the node going offline | `node.stopped`, and scheduled batches that stop arriving | M1 |
 | Integrate real node activity | a read-only Foundry node publishing through the export, and OBL's ingest endpoint | M2 |
-| Keep channel management and payouts manual | Foundry instructs the node in nothing before M4, and in M4 only with an operator approving each action | until M4 |
-| Run Foundry: channel allocation, optimization, rebalancing, local AI | the later milestones, each gated as [`roadmap.md`](../roadmap.md) describes | M4 to M6 |
+| Keep channel management and payouts manual | nothing acts on the node under Foundry before M4, and in M4 only with an operator approving each action | until M4 |
+| Run Foundry: channel allocation, optimization, rebalancing, local AI | Lightning Jet deciding and Foundry approving, in the later milestones, each gated as [`roadmap.md`](../roadmap.md) describes | M4 to M6 |
 | Add rooms for more nodes | once the multi-node risks in [`oogabooga.md`](oogabooga.md) are settled | later |
 
 The plan says the proof of concept does not depend on Foundry being ready, and nothing here

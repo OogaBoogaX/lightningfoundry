@@ -1,8 +1,9 @@
 # Economics
 
-Profitability is Foundry's optimization objective. This document defines what that means,
-because the definition is the reward signal every automated decision is judged against. An
-imprecise definition here produces a system that optimizes the wrong thing very efficiently.
+Profitability is the objective a Foundry node is optimized for: Lightning Jet, or another
+module, optimizes it, and Foundry measures it. This document defines what that means, because
+the definition is the reward signal every automated decision is judged against. An imprecise
+definition here produces a system that optimizes the wrong thing very efficiently.
 
 Status: v0.1. The definitions are settled; the worked figures are illustrative.
 
@@ -92,8 +93,8 @@ exists for.
 
 ## Attribution requires experiment design
 
-Recording a decision is not the same as attributing an outcome to it. If Foundry raises a fee
-and revenue rises, the cause may be the fee, a change in network topology, a peer's own
+Recording a decision is not the same as attributing an outcome to it. If a fee goes up and
+revenue rises, the cause may be the fee, a change in network topology, a peer's own
 repricing, or ordinary variance. Logs alone cannot separate these, and a system that reports
 "the fee change earned +8%" from logs alone is telling stories about noise.
 

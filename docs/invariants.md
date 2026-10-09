@@ -78,11 +78,12 @@ Bitcoin Core and LND continue functioning safely if Foundry's AI or management c
 fail.
 
 **In practice:** "keeps running" is not sufficient, because isolation is about blast radius,
-not uptime. Foundry holds credentials that can close channels and spend fees, so:
+not uptime. A Foundry node runs with credentials that can close channels and spend fees, so:
 
 - Capabilities are scoped. LND's macaroons are baked per capability; the component that reads
   is not the component that acts.
-- Read-only is the default. Acting requires a separately held, narrower credential.
+- Read-only is the default. Acting requires a separately held, narrower credential, and LND
+  honors it only as Policy allows.
 - Budgets are hard limits, enforced deterministically: a ceiling on rebalance fees per day, a
   ceiling on channel closes per day, a floor on reserves.
 - A crashed, wedged or compromised Foundry must leave the node in a state the operator can

@@ -1,6 +1,7 @@
 # 0009. Circular rebalancing lives in Lightning Jet
 
-**Status:** proposed, 2026-10-02
+**Status:** superseded by [0011](0011-jet-optimizes-foundry-operates.md), 2026-10-08.
+Proposed on 2026-10-02 and never accepted.
 
 ## Decision
 

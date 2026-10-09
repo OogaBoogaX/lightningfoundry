@@ -10,13 +10,11 @@ boundaries not to.
 ┌──────────────────────────────────────────────────────────────┐
 │  Local UI          Assistant (explains, changes nothing)     │
 ├──────────────────────────────────────────────────────────────┤
-│  Intelligence — advisory only, proposes, never executes      │
-├──────────────────────────────────────────────────────────────┤
-│  Rebalancing engine (Lightning Jet) — asks LND; Policy rules │
+│  Module (Lightning Jet) — decides and acts; Policy approves  │
 ├──────────────────────────────────────────────────────────────┤
 │  Policy — deterministic limits. The only path to an action   │
 ├──────────────────────────────────────────────────────────────┤
-│  Foundry Core — observation, accounting, events, execution   │
+│  Foundry Core — observation, accounting, events, supervision │
 ├──────────────────────────────────────────────────────────────┤
 │  LND                                                         │
 │  Bitcoin Core                                                │
@@ -24,23 +22,28 @@ boundaries not to.
 ```
 
 Read it as a permission gradient. Everything above Policy can *ask*. Only Policy can *allow*.
-Core acts on what Policy allows, and LND makes a managed rebalancing engine's changes only once
-Policy has allowed each one.
+The module acts itself, and LND carries out each change it asks for only once Policy has
+allowed it.
+
+The module is the node's intelligence: Lightning Jet, or any engine that keeps Foundry's
+interface. It is not part of Foundry; Foundry runs it, contains it and decides what it may do
+([decision 0011](decisions/0011-jet-optimizes-foundry-operates.md)).
 
 ## The one rule
 
 **Nothing reaches LND except through Policy, and Policy is deterministic code.**
 
-A model may produce a proposal. A proposal is data. It becomes an action only after
-deterministic code has checked it against limits the operator set, and that code contains no
-model, no heuristic that changes with training, and no path that can be widened at runtime.
+A module may decide anything. Before it acts, it sends Policy an intent, and Policy approves it
+against limits the operator set, at once or after the operator agrees. The module then makes
+the call itself, and LND holds the call until Policy has checked it against an approved
+intent. That check contains no model, no heuristic that changes with training, and no path
+that can be widened at runtime.
 
 This is [invariant 6](invariants.md) as a structural property rather than a promise. If the
-intelligence layer is compromised, wrong, or replaced by something malicious, the worst it can
-do is make proposals that Policy rejects.
+module is compromised, wrong, or replaced by something malicious, the worst it can do is ask
+for actions that Policy refuses.
 
-A managed rebalancing engine talks to LND from outside Foundry, and the rule holds for it too,
-enforced by LND rather than by the engine's good manners. The macaroon it acts with carries a
+The check does not rest on the module's good manners. The macaroon it acts with carries a
 custom caveat, so LND hands every request made with it to Policy first, through LND's RPC
 middleware, and refuses the macaroon while Policy is absent. See
 [`integrations/lightning-jet.md`](integrations/lightning-jet.md).
@@ -50,30 +53,35 @@ middleware, and refuses the macaroon while Policy is absent. See
 | Component | Holds | Responsibility |
 |---|---|---|
 | **Core / observer** | LND read macaroon | Subscribes to LND, normalizes to internal events, persists them |
-| **Core / accounting** | nothing | Turns events into the measures in [`economics.md`](economics.md) |
-| **Policy** | LND action macaroon | The only component that instructs the node; enforces limits and budgets, and rules on each call a managed engine makes |
-| **Intelligence** | nothing | Reads history, emits proposals; no credentials, no network |
-| **Rebalancing engine** | LND macaroon carrying Policy's caveat; a read-only macaroon | Outside Foundry: Lightning Jet, or another engine, managed. Moves liquidity toward Foundry's targets; LND holds each change it asks for until Policy rules |
+| **Core / accounting** | nothing | Turns events into the measures in [`economics.md`](economics.md): the record every action is judged against, reported back to the module |
+| **Core / supervisor** | control of the node's processes; no LND credential | Installs, starts, contains, backs up and upgrades Bitcoin Core, LND and the module |
+| **Policy** | LND macaroon that can only register middleware and revoke macaroons | Approves intents against the operator's limits, and checks every call the module makes against them |
+| **Module** | LND macaroon carrying Policy's caveat; a read-only macaroon | Outside Foundry: Lightning Jet, or another engine that keeps the interface. Decides and makes its own calls; every change waits in LND for Policy |
 | **Assistant** | nothing | Explains state in language; read-only by construction |
 | **Export** | export key, per-node credential | Translates internal events to the public schema and pushes them to one configured endpoint, opt-in; holds no LND credential |
-| **UI** | nothing | Local interface; talks to Core, not to LND |
+| **UI** | nothing | Local interface for policy, approvals and the node's state; talks to Core and Policy, not to LND |
 
 Two things follow from the table. **LND credentials live with three components**, and they are
-different credentials: the observer's can only read, Policy's can act, and a managed engine's
-can act only call by call, as Policy allows. And **the intelligence layer holds nothing** — no
-keys, no network, no ability to act — which makes it the cheapest component to be wrong about.
+different credentials: the observer's can only read, Policy's can only gate, and the module's
+can act only call by call, as Policy allows. And **Foundry holds no credential that moves
+money**: the one that can act belongs to the module, and LND will not honor it without Policy.
 
 ## Trust boundaries
 
 Four, in order of how much it costs to get them wrong:
 
-1. **Seed and wallet.** Outside Foundry entirely. Foundry never holds, reads or needs one.
-2. **Action credential.** Held by Policy. Scoped with LND's baked macaroons so that even a
-   total compromise of Policy cannot do what its macaroon does not permit. A managed
-   rebalancing engine holds one too, carrying a caveat that makes LND ask Policy before
-   honoring any call made with it.
-3. **Read credential.** Held by the observer. Leaks operational data if compromised; cannot
-   move funds.
+1. **Seed and wallet.** Outside Foundry entirely. Foundry never holds, reads or needs one. When
+   the supervisor restarts LND, unlocking the wallet is LND's own configuration, set by the
+   operator.
+2. **The acting credential and the gate.** The module holds the one credential that can act;
+   LND asks Policy before honoring any call made with it, and refuses it while Policy is
+   absent. Policy holds the gate, a macaroon that can register that middleware and revoke
+   macaroons, and nothing else. Each alone moves nothing. Together they are the authority to
+   act, so no component ever holds both. LND's own admin macaroon could act alone, so it stays
+   out of reach: the packaged install initializes LND statelessly, so it is never written to
+   disk, and on an adopted node no Foundry component can read it.
+3. **Read credentials.** Held by the observer and the module. Leak operational data if
+   compromised; cannot move funds.
 4. **Export.** Internal events become public events here, by translation into a different
    schema — never by filtering fields out of the internal one — and leave the machine only as
    signed batches the node pushes out. Nothing can connect in to fetch them. See
@@ -84,22 +92,29 @@ Four, in order of how much it costs to get them wrong:
 ```text
 LND ──(read macaroon)──► observer ──► internal events ──► store
                                               │
-                          ┌───────────────────┼───────────────────┐
-                          ▼                   ▼                   ▼
-                     accounting          intelligence          export
-                          │                   │                   │
-                          └──► proposals ◄────┘                   ▼
-                                   │                        public events
-                                   ▼                  (opt-in, signed, pushed)
-                                POLICY ──(action macaroon)──► LND
+                          ┌───────────────────┴───────────────────┐
+                          ▼                                       ▼
+                     accounting                                export
+                          │                                       │
+                          ▼                                       ▼
+               POLICY, and the module                       public events
+                through the interface                 (opt-in, signed, pushed)
 ```
 
 The store is the seam. Everything downstream reads events rather than querying LND directly,
-which means accounting and intelligence can be replayed against history, tested against
-fixtures, and run against the simulator with no node present.
+which means accounting can be replayed against history, and a module can be tested against
+fixtures and the simulator with no node present. Accounting gives Policy the measures it
+checks intents against, and gives the module the outcomes of what it did, through the
+interface.
 
-A managed rebalancing engine sits outside this flow. It reads LND with its own read-only
-macaroon, and every change it asks for waits in LND for Policy's verdict.
+A module asks before it acts. Its intents go to Policy, which approves them at once or after
+the operator agrees. The module then makes each call itself, and LND holds every call made with
+the gated macaroon until Policy has checked it:
+
+```text
+module ──(intent)──► POLICY ──(verdict)──► module
+module ──(call, gated macaroon)──► LND ◄──(allow or refuse)── POLICY
+```
 
 Public events leave by one path: the export pushes signed batches to a single configured
 endpoint, and the node listens for nothing. The Delivery section of
@@ -112,12 +127,12 @@ What happens when each piece dies:
 | Fails | Consequence |
 |---|---|
 | Assistant | Nothing. It only ever talked. |
-| Intelligence | No proposals. Baselines and manual operation continue. |
-| Policy | No actions execute, and LND refuses a managed engine's changes. The node keeps routing; Foundry stops instructing it. |
-| Rebalancing engine | No rebalancing. Foundry and the node carry on, and the operator or another engine can take over. |
+| Module | No decisions and no actions. The node keeps routing; Foundry keeps watching, and the operator or another module can take over. |
+| Policy | No intent is approved, and LND refuses the module's gated macaroon. The node keeps routing. |
 | Observer | No new events. The node keeps routing; Foundry goes blind. |
+| Supervisor | Processes keep running as they are; nothing restarts, backs up or upgrades them. |
 | Export | The public feed stops. Nothing else notices. |
-| Foundry entirely | LND and Bitcoin Core carry on. The operator resumes manual control. |
+| Foundry entirely | LND and Bitcoin Core carry on, and the module's gated macaroon stops working. The operator resumes manual control. |
 
 There is no failure mode in that table where Foundry breaking takes the node down with it.
 That is the requirement, not a happy accident: Bitcoin Core and LND are the trust anchors, and
@@ -126,11 +141,13 @@ Foundry is a management layer on top of them.
 ## Deliberately outside
 
 - **The Lightning protocol.** LND implements it. Foundry never will.
+- **The node's intelligence.** Rebalancing, fees, channels, capital and the models behind them
+  belong to Lightning Jet, or any module that keeps the interface. Foundry decides only whether
+  each action is allowed — see
+  [decision 0011](decisions/0011-jet-optimizes-foundry-operates.md).
 - **Payment processing.** Donations, invoicing and merchant flows are a separate concern with
   a separate stack. BTCPay Server lives on Ooga Booga Land's payments side and is not a Foundry
   dependency — see [`integrations/obl-payments-poc.md`](integrations/obl-payments-poc.md).
-- **Circular rebalancing.** Lightning Jet does it, under Policy when Foundry manages it — see
-  [decision 0009](decisions/0009-rebalancing-in-lightning-jet.md).
 - **Any cloud component.** There is no server half of this product.
 - **Visualization.** Foundry emits events; consumers draw pictures.
 
@@ -140,11 +157,11 @@ Foundry is a management layer on top of them.
 repository yet, because adding one would decide it silently.
 
 The considerations: LND is Go and its gRPC bindings are first-class there. A component holding
-an action macaroon and enforcing capital limits has a real argument for a compiled,
-memory-safe language. Lightning Jet is Node, but it meets Foundry at a contract and at LND's
-API rather than in shared code
-([decision 0009](decisions/0009-rebalancing-in-lightning-jet.md)), so it no longer argues for
-Node. The answer may still be "more than one," with the event store as the seam between them.
+the gate and enforcing capital limits has a real argument for a compiled, memory-safe
+language. Lightning Jet is Node, but it meets Foundry at an interface and at LND's API rather
+than in shared code ([decision 0011](decisions/0011-jet-optimizes-foundry-operates.md)), so it
+does not argue for Node. The answer may still be "more than one," with the event store as the
+seam between them.
 
 Whatever the answer, it should be recorded in [`decisions/`](decisions/) with its reasoning,
 because it is the kind of choice that is expensive to revisit and easy to forget the reasons

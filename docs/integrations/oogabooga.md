@@ -1,7 +1,7 @@
 # Ooga Booga Land
 
-Foundry runs and learns from Lightning. Ooga Booga Land (OBL) makes that activity visible,
-understandable and social.
+Lightning Jet decides how a node should run, Foundry runs it, and Ooga Booga Land (OBL) makes
+that activity visible, understandable and social.
 
 The two projects reinforce each other without depending on each other. Foundry is useful with
 no cave at all; OBL is a separate project with its own schedule and its own repository. What
@@ -11,9 +11,13 @@ infrastructure with a living world around it, and a path from curiosity to runni
 ## The loop
 
 ```text
+                   LIGHTNING JET
+                        │
+       decides what would improve the node
+                        ▼
                  LIGHTNING FOUNDRY
                         │
-        operates + learns + optimizes
+          approves + operates + accounts
                         ▼
                 OBL Lightning Node
                         │
@@ -29,12 +33,12 @@ infrastructure with a living world around it, and a path from curiosity to runni
                      OBL Community
                         │
             users / contributors / nodes
-                        └──────► Foundry
+                        └──────► Jet and Foundry
 ```
 
 The last arrow is the point. Someone meets Lightning through a game, watches a gorilla build
-a channel, learns why a rebalance happened, finds Foundry, contributes, runs a node — and may
-eventually connect that node back to the ecosystem.
+a channel, learns why a rebalance happened, finds Foundry or Jet, contributes, runs a node —
+and may eventually connect that node back to the ecosystem.
 
 OBL also gives Foundry something no simulator can: **a real node with real economic
 activity** to operate, rather than a synthetic demo.
