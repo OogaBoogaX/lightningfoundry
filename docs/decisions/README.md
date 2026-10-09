@@ -15,7 +15,8 @@ One file per decision, numbered in order: `NNNN-short-title.md`.
 - **Consequences** — what it makes easier, harder or impossible.
 
 Records are not edited after acceptance, except to mark them superseded. Changing a decision
-means writing a new record.
+means writing a new record. A record may be proposed while its pull request is open, but it
+merges as accepted, dated the day it was accepted, so no record sits on `main` as proposed.
 
 ## Records
 

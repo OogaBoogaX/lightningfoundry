@@ -1,6 +1,6 @@
 # 0010. Foundry adopts compatible nodes as well as installing its own
 
-**Status:** accepted, 2026-10-08
+**Status:** accepted, 2026-10-02
 
 ## Decision
 
@@ -29,5 +29,5 @@ packaged install keeps a minimal, verified stack for anyone starting fresh.
   so.
 - An adopted node may run other services beside LND. They stay outside Foundry's trusted
   computing base, and outside its guarantees.
-- The compatibility list includes what a managed module needs, such as LND's RPC middleware
-  ([decision 0011](0011-jet-optimizes-foundry-operates.md)).
+- The compatibility list includes what managed rebalancing needs, such as LND's RPC middleware
+  ([decision 0009](0009-rebalancing-in-lightning-jet.md)).
