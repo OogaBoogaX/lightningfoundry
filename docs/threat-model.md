@@ -14,7 +14,9 @@ Status: v0.1, written before the runtime exists. Expect it to change as real com
 |---|---|
 | On-chain funds and channel balances | Directly spendable |
 | Seed and wallet keys | Total loss |
-| LND macaroons | Can close channels, spend fees, move funds within limits |
+| The module's acting macaroon | Can close channels, spend fees and move funds, but LND honors it only as Policy allows |
+| Policy's gate macaroon | Decides what the module may do, and can revoke macaroons; moves nothing itself |
+| Read macaroons | Reveal balances, peers and history; move nothing |
 | Export key and per-node credential | Can publish forged events under the node's name; cannot move funds or read balances |
 | Liquidity state | Enables jamming and probing; commercially useful to competitors |
 | Channel topology and peer set | Deanonymizes the operator; informs targeting |
@@ -50,17 +52,16 @@ reduces what it hands over for free; it does not make a node unprobeable.
 **Wants:** to force unfavorable closes, grief with stuck HTLCs, or exploit a fee policy.
 
 **Gets:** force closes cost on-chain fees and lock funds behind a timelock. A peer who can
-predict Foundry's automated responses can farm them — provoke a rebalance, collect the fee.
+predict the node's automated responses can farm them — provoke a rebalance, collect the fee.
 
 **Mitigation:** hard budget caps that are not policy suggestions (invariant 7). A peer that
 can trigger unlimited rebalancing has found a money pump; a daily fee ceiling turns that into
-a bounded annoyance. The ceiling binds the rebalancing engine too: in managed mode Policy
-counts every fee Lightning Jet pays against it, and standalone, Jet's own limit is the only
-bound.
+a bounded annoyance. The ceiling binds the module: in managed mode Policy counts every fee
+Lightning Jet pays against it, and standalone, Jet's own limit is the only bound.
 
 **Open question:** automated responses are predictable by construction, and predictability is
-exploitable. Worth deliberate thought before M4, when Foundry first acts, rather than a claim
-now.
+exploitable. Worth deliberate thought before M4, when a module first acts under Foundry,
+rather than a claim now.
 
 ### 3. The supply chain
 
@@ -74,9 +75,10 @@ reproducible builds; runtime network isolation enforced by the sandbox rather th
 the package. See the Dependency Guardian in [`invariants.md`](invariants.md), including an
 explicit statement of what it cannot guarantee.
 
-A rebalancing engine running beside the node is part of this surface even when Foundry does
-not manage it. Managed, it must meet invariant 1 like Foundry's own code; see
-[`integrations/lightning-jet.md`](integrations/lightning-jet.md).
+A module running beside the node is part of this surface even when Foundry does not manage
+it. Managed, it must meet invariant 1 like Foundry's own code, and the gate bounds even a
+malicious release: its macaroon moves nothing Policy has not approved, and its sandbox has no
+network to leak through. See [`integrations/lightning-jet.md`](integrations/lightning-jet.md).
 
 ### 4. The update channel
 
@@ -118,14 +120,14 @@ hours reveals a pattern. Bucketing narrows this; it does not eliminate it. Rebal
 leak more, by decision, as adversary 1 describes. Publishing is opt-in for exactly these
 reasons.
 
-### 7. Foundry itself
+### 7. Foundry and its module
 
-**Wants:** nothing. It is buggy, not hostile — which makes it the most likely adversary on
-this list to actually cost someone money.
+**Wants:** nothing. They are buggy, not hostile — which makes them the most likely adversary
+on this list to actually cost someone money.
 
-**Gets:** whatever its credentials allow. A rebalancing loop with a bad cost model, in
-Foundry's targets or in the engine's choices, can burn real sats indefinitely while every
-component behaves exactly as written.
+**Gets:** whatever their credentials allow. A rebalancing loop with a bad cost model, in the
+module's choices or in the limits Foundry enforces, can burn real sats indefinitely while
+every component behaves exactly as written.
 
 **Mitigation:** deterministic limits that are not advisory; read-only by default; a model can
 never grant itself authority (invariant 6); every economic decision recorded and evaluated

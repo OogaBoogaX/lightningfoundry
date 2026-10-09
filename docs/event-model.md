@@ -94,7 +94,7 @@ real node is a fiction that a simulator will happily keep alive.
 | `forward.settled` | `SubscribeHtlcEvents` (forward + settle), `ForwardingHistory` | observed |
 | `forward.failed` | `SubscribeHtlcEvents` (`LinkFailEvent`, `ForwardFailEvent`) | observed |
 | `liquidity.low` / `liquidity.recovered` | **none** — derived from `ListChannels` balances vs. an operator threshold | derived |
-| `rebalance.started` / `succeeded` / `failed` | circular payments (`TrackPayments`, `ListPayments`), whichever rebalancing engine made them | observed (the payment) / derived (the decision) |
+| `rebalance.started` / `succeeded` / `failed` | circular payments (`TrackPayments`, `ListPayments`), whichever module or tool made them | observed (the payment) / derived (the decision) |
 | `economics.snapshot` | **none** — computed per `docs/economics.md` | derived |
 
 Three of seventeen event types have no LND equivalent. That is the honest shape of this
@@ -111,10 +111,10 @@ forwards this way.
 assumed failure was free would quietly understate the cost of liquidity management, which is
 half of the operating margin.
 
-**A rebalance Foundry did not ask for is still a fact.** A rebalancing engine running on its
-own makes circular payments Foundry never targeted. Foundry observes them like any other and
-publishes them under the same rules; an engine never publishes anything itself. See
-[`integrations/lightning-jet.md`](integrations/lightning-jet.md).
+**A rebalance Foundry did not approve is still a fact.** A tool running on its own, such as
+Lightning Jet standalone, makes circular payments that never passed Policy. Foundry observes
+them like any other and publishes them under the same rules; a module never publishes anything
+itself. See [`integrations/lightning-jet.md`](integrations/lightning-jet.md).
 
 **`channel.closed` carries `close_type`.** A cooperative close and a force close differ by an
 order of magnitude in cost and by a timelock in recovery. Economics cannot treat them alike.

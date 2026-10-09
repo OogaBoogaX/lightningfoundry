@@ -1,6 +1,6 @@
 # 0010. Foundry adopts compatible nodes as well as installing its own
 
-**Status:** proposed, 2026-10-02
+**Status:** accepted, 2026-10-02
 
 ## Decision
 

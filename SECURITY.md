@@ -56,11 +56,13 @@ speed matters more than our schedule.
 privilege and capability boundaries, the dependency and release verification path, the public
 event feed leaking operational data, the delivery path that carries it (forging a node's
 events, or reading or altering them in transit), and any way the deterministic limits
-protecting capital can be bypassed — including by Foundry's own AI components.
+protecting capital can be bypassed — including by a module such as Lightning Jet, or by any
+AI component.
 
 **Out of scope,** because they are upstream projects with their own processes: vulnerabilities
-in Bitcoin Core, LND or other dependencies. Please report those to their maintainers. If the
-issue is that *Foundry uses them unsafely*, that is in scope and we want to hear it.
+in Bitcoin Core, LND, Lightning Jet or other dependencies. Please report those to their
+maintainers. If the issue is that *Foundry uses them unsafely*, that is in scope and we want to
+hear it.
 
 Also out of scope: the fact that routing nodes can lose money, and attacks requiring physical
 access to the operator's hardware. Both are documented in

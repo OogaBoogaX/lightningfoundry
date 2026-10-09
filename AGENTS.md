@@ -9,13 +9,15 @@ run unattended against a funded routing node, because eventually it will.
 
 ## What this is
 
-Foundry builds, operates and optimizes autonomous Bitcoin Lightning routing nodes. It does
-**not** implement the Lightning protocol: Bitcoin Core and LND provide the Bitcoin and
-Lightning infrastructure. Foundry provides everything needed to operate that infrastructure
-and make it economically accountable.
+Foundry builds and operates autonomous Bitcoin Lightning routing nodes. It does **not**
+implement the Lightning protocol: Bitcoin Core and LND provide the Bitcoin and Lightning
+infrastructure. Nor does it decide how the node is optimized: Lightning Jet, or any module
+that keeps Foundry's interface, does that. Foundry provides everything needed to operate the
+infrastructure safely and make it economically accountable, and decides whether each action
+the module takes is allowed.
 
-Six functional areas, one system: node operation, intelligence, automation, security,
-factory (the events a visualization is built on), education.
+Six functional areas, one system: node operation, security and policy, accounting, the module
+interface, factory (the events a visualization is built on), education.
 
 ## Ground rules
 
@@ -50,7 +52,7 @@ Foundry uses fork and pull request. Branch from `main` in your own fork, open a 
 
 Changes touching security policy, limits or permissions, dependencies, wallet, macaroon or key
 handling, economic execution with or without a human approving it, the economic definitions,
-or the public event schema and its delivery require additional review.
+the module interface, or the public event schema and its delivery require additional review.
 
 ## Testing
 

@@ -15,7 +15,8 @@ One file per decision, numbered in order: `NNNN-short-title.md`.
 - **Consequences** — what it makes easier, harder or impossible.
 
 Records are not edited after acceptance, except to mark them superseded. Changing a decision
-means writing a new record.
+means writing a new record. A record may be proposed while its pull request is open, but it
+merges as accepted, dated the day it was accepted, so no record sits on `main` as proposed.
 
 ## Records
 
@@ -29,8 +30,9 @@ means writing a new record.
 | [0006](0006-open-contributions.md) | Contributions open, under both Apache-2.0 and the Unlicense | superseded by 0007 |
 | [0007](0007-ooga-booga-license.md) | Adopt The Ooga Booga License | accepted |
 | [0008](0008-move-to-oogaboogax.md) | The repository lives at OogaBoogaX/lightningfoundry | accepted |
-| [0009](0009-rebalancing-in-lightning-jet.md) | Circular rebalancing lives in Lightning Jet, under Policy when managed | proposed |
-| [0010](0010-adopt-or-install.md) | Foundry adopts compatible nodes as well as installing its own | proposed |
+| [0009](0009-rebalancing-in-lightning-jet.md) | Circular rebalancing lives in Lightning Jet, under Policy when managed | superseded by 0011 |
+| [0010](0010-adopt-or-install.md) | Foundry adopts compatible nodes as well as installing its own | accepted |
+| [0011](0011-jet-optimizes-foundry-operates.md) | Lightning Jet optimizes the node; Foundry operates it | accepted |
 
 ## Waiting for a record
 

@@ -1,16 +1,21 @@
 # Lightning Foundry
 
-An open-source, AI-native, local-first platform for building, operating and continuously
-optimizing autonomous Bitcoin Lightning routing nodes.
+An open-source, AI-native, local-first operating platform for autonomous Bitcoin Lightning
+routing nodes. Foundry runs a minimal, verifiable Bitcoin Core and LND stack, keeps it
+healthy, and decides, deterministically, whether each action the node's intelligence wants to
+take is allowed. That intelligence is
+[Lightning Jet](https://github.com/drneski/lightning-jet), or any module that keeps Foundry's
+interface: **Jet optimizes the node; Foundry operates it.**
 
-**Running a profitable routing node is a part-time job. Foundry's goal is to make it a
-decision you review, not a shift you work** — on modest hardware, with verifiable software,
-intelligence that runs on your own machine, and an interface simple enough that operating a
-node does not require becoming a Lightning expert first.
+**Running a profitable routing node is a part-time job. Together, Jet and Foundry aim to make
+it a decision you review, not a shift you work** — on modest hardware, with verifiable
+software, intelligence that runs on your own machine, and an interface simple enough that
+operating a node does not require becoming a Lightning expert first.
 
 **Profitability is the optimization objective, not a guaranteed outcome.** Foundry measures
-real economic performance, learns from its decisions, and accounts for the full cost of
-running a routing node — including the costs most dashboards leave out.
+real economic performance and accounts for the full cost of running a routing node —
+including the costs most dashboards leave out — and reports every outcome back to the module
+that chose the action.
 
 ## Status
 
@@ -19,15 +24,18 @@ running a routing node — including the costs most dashboards leave out.
 This repository holds the design, written before the code so the boundaries are decided
 rather than discovered: the vision, the event contract and its tests, the economic
 definitions, the architecture and the invariants it keeps, the threat model, and the roadmap.
-The runtime, the intelligence and the installer arrive in later milestones. Do not point
+The runtime and the installer arrive in later milestones, and the intelligence comes from
+Lightning Jet. Do not point
 anything in this repository at a node holding funds you would mind losing, because there is
 nothing here to point at yet.
 
 ## What Foundry is not
 
 - **Not a Lightning implementation.** Bitcoin Core and LND provide the Bitcoin and
-  Lightning infrastructure. Foundry operates and optimizes that infrastructure; it does not
-  reimplement it.
+  Lightning infrastructure. Foundry operates that infrastructure; it does not reimplement it.
+- **Not the intelligence.** Decisions about rebalancing, fees, channels and capital come from
+  Lightning Jet, or another module that keeps Foundry's interface. Foundry decides whether
+  each one is allowed.
 - **Not a wallet.** Foundry never holds your seed and never needs it.
 - **Not financial advice.** Routing is a business with real downside. A node can lose money
   through fees, capital lockup and force closes while behaving exactly as designed.
@@ -47,11 +55,11 @@ Then, roughly in this order:
 | [`docs/architecture.md`](docs/architecture.md) | The components, what each may hold, and why nothing reaches LND except through Policy |
 | [`docs/invariants.md`](docs/invariants.md) | The eight principles every change is judged against |
 | [`docs/threat-model.md`](docs/threat-model.md) | Who we defend against, and what actually stops them |
-| [`docs/ai-strategy.md`](docs/ai-strategy.md) | The two AI systems, and why neither enforces anything |
+| [`docs/ai-strategy.md`](docs/ai-strategy.md) | The module's models and Foundry's assistant, and why neither enforces anything |
 | [`docs/roadmap.md`](docs/roadmap.md) | The milestones in order, and what would make us stop |
 | [`docs/integrations/oogabooga.md`](docs/integrations/oogabooga.md) | What Ooga Booga Land's Lightning Factory may show, and what publishing rebalances costs |
 | [`docs/integrations/obl-payments-poc.md`](docs/integrations/obl-payments-poc.md) | How OBL's payments and Factory proof of concept lines up with the milestones |
-| [`docs/integrations/lightning-jet.md`](docs/integrations/lightning-jet.md) | How Lightning Jet rebalances under Foundry, and what it may never do |
+| [`docs/integrations/lightning-jet.md`](docs/integrations/lightning-jet.md) | How Lightning Jet optimizes a node Foundry operates, and how Foundry approves what it does |
 | [`docs/lightning-factory.md`](docs/lightning-factory.md) | What a consumer of the public stream must do with it, and must never show |
 | [`docs/decisions/`](docs/decisions/) | Choices that are expensive to revisit, and why they were made |
 | [`schemas/`](schemas/), [`examples/`](examples/) | The event contract as JSON Schema, and one channel's life in both streams |
@@ -74,19 +82,19 @@ node tests/contract.test.mjs
 | | Milestone | Done when |
 |---|---|---|
 | **M1** | Contract and simulator | a consumer can build against the event stream with no node running |
-| **M2** | Foundry Node, read-only | a real LND runs under Foundry and Foundry has instructed it to do nothing |
+| **M2** | Foundry Node, read-only | a real LND runs under Foundry and nothing has acted on it through Foundry |
 | **M3** | Measurement and baselines | an operator can answer "was this channel worth having?" from their own data |
-| **M4** | Supervised action | Foundry proposes, the operator approves, and no deterministic limit is ever breached |
-| **M5** | Routing intelligence | a model beats the M3 baselines on realized sats — or it doesn't, and we publish that |
-| **M6** | Autonomy within a mandate | a node runs unattended inside limits its model cannot widen |
+| **M4** | Supervised action | the module proposes, the operator approves, and no deterministic limit is ever breached |
+| **M5** | Judging routing intelligence | Foundry can tell whether a module's model beats the M3 baselines on realized sats, and publishes the answer |
+| **M6** | Autonomy within a mandate | a node runs unattended inside limits its module cannot widen |
 
 Read-only comes before acting, and measurement comes before intelligence, deliberately.
-M4 exists as its own milestone because the first time Foundry itself moves money, even with
-the operator approving each action, is the riskiest step in the project.
+M4 exists as its own milestone because the first time money moves under Foundry's authority,
+even with the operator approving each action, is the riskiest step in the project.
 
-Two tracks run alongside rather than gating the sequence: the Ooga Booga Land visualization
-and community loop, and conditional hardware research. Ordering, not dates —
-see [`docs/roadmap.md`](docs/roadmap.md).
+Three tracks run alongside rather than gating the sequence: the Ooga Booga Land visualization
+and community loop, Lightning Jet's own roadmap, and research into the smallest safe node.
+Ordering, not dates — see [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Contributing
 
