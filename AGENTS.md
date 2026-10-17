@@ -45,7 +45,7 @@ interface, factory (the events a visualization is built on), education.
 
 ## Contributing
 
-Foundry uses fork and pull request. Branch from `main` in your own fork, open a PR against
+Foundry uses fork and pull request. Branch from `rock` in your own fork, open a PR against
 `OogaBoogaX/lightningfoundry`, and describe what you verified. Contributions are made under
 [The Ooga Booga License](LICENSE); see
 [`CONTRIBUTING.md`](CONTRIBUTING.md#licensing-your-contribution).
